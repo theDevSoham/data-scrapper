@@ -6,6 +6,7 @@ class SocialMediaScrapperBase(Scrapper, Authenticator):
     def __init__(self, client_token: str):
         self._isAuthenticated: bool = False
         self._client_token = client_token
+        self._user_id: str | None = None
         self._authenticate(client_token=client_token)
         
     def _authenticate(self, client_token: str) -> None:

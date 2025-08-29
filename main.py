@@ -9,12 +9,12 @@ if __name__ == "__main__":
     storage = StorageGateway()
 
     instagram_scrapper = InstagramScrapper("Insta token")
-    # facebook_scrapper = FacebookScrapper("Facebook token")
-    twitter_scrapper = TwitterScrapper("RHM1dENLTDF3MGJZdXhZSy1XZi1LVF9NVi1KU2RwdlRsM1NpWVp5eWtUdnUyOjE3NTY0ODE3NzI0ODI6MTowOmF0OjE")
+    facebook_scrapper = FacebookScrapper("facebook token")
+    twitter_scrapper = TwitterScrapper("twitter token")
     orchestrator = Orchestrator.Orchestrator(
         scrappers=[
             instagram_scrapper, 
-            # facebook_scrapper, 
+            facebook_scrapper,
             twitter_scrapper
         ],
         parser=parser,

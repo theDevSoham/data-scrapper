@@ -5,26 +5,23 @@ from typing import List, Dict, Any
 # ----- Twitter Scrapper -----
 class TwitterScrapper(SocialMediaScrapperBase):
     
-    def __init__(self, client_token: str):
-        self.__user_id: str | None = None
-        super().__init__(client_token=client_token)
     def _authenticate(self, client_token: str) -> None:
         """Authenticate client by verifying provided token."""
         print("[TwitterScrapper] Authenticating with Twitter...")
         try:
-            self.__user_id = self.__verify_token(client_token)
-            print(f"[TwitterScrapper] Authenticated. User ID: {self.__user_id}")
+            self._user_id = self.__verify_token(client_token)
+            print(f"[TwitterScrapper] Authenticated. User ID: {self._user_id}")
         except Exception as e:
             print(f"[TwitterScrapper] Authentication failed: {str(e)}")
             raise
 
     def fetch_data(self):
         """Fetch tweets for authenticated user."""
-        if not self.__user_id or not self._client_token:
+        if not self._user_id or not self._client_token:
             raise RuntimeError("User not authenticated. Call _authenticate first.")
 
         url = (
-            f"https://api.x.com/2/users/{self.__user_id}/tweets"
+            f"https://api.x.com/2/users/{self._user_id}/tweets"
             "?max_results=100&tweet.fields=id,text,created_at,public_metrics"
             "&exclude=retweets,replies"
         )
