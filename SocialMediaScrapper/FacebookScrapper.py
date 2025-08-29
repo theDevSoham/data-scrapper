@@ -6,6 +6,10 @@ from config.Config import APP_ID, APP_SECRET, SCOPE
 # ----- Facebook Scrapper -----
 class FacebookScrapper(SocialMediaScrapperBase):
     
+    def __init__(self, client_token):
+        super().__init__(client_token)
+        self.token: str = ""
+    
     def __verify_token(self, token: str) -> bool:
         print("[FacebookScrapper] Verifying token...")
         app_access_token = f"{APP_ID}|{APP_SECRET}"
@@ -51,6 +55,6 @@ class FacebookScrapper(SocialMediaScrapperBase):
         else:
             raise ValueError("Invalid Facebook token")
 
-    def fetch_data(self) -> List[Dict[str, Any]]:
+    def fetch_data(self):
         print("[FacebookScrapper] Fetching data...")
         return [{"post": "Hello FB", "likes": 42}]
