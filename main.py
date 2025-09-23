@@ -5,8 +5,26 @@ from utils import Parser, Normalizer, StorageGateway
 from Orchestrator import Orchestrator
 from Scrapper import Scrapper
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
+from exceptions.exceptions import AuthenticationError, ScraperError
 
 app = FastAPI()
+
+# exception handlers
+@app.exception_handler(AuthenticationError)
+async def auth_exception_handler(request: Request, exc: AuthenticationError):
+    return JSONResponse(
+        status_code=401,
+        content={"status": "error", "error_type": "AuthenticationError", "message": exc.message},
+    )
+    
+@app.exception_handler(ScraperError)
+async def scraper_exception_handler(request: Request, exc: ScraperError):
+    return JSONResponse(
+        status_code=400,
+        content={"status": "error", "error_type": "ScraperError", "message": exc.message},
+    )    
 
 # Request body schema
 class TokenRequest(BaseModel):

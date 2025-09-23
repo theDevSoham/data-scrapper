@@ -2,6 +2,7 @@ from .SocialMediaScrapperBase import SocialMediaScrapperBase
 from typing import List, Dict, Any
 import requests
 from config.Config import APP_ID, APP_SECRET, SCOPE
+from exceptions.exceptions import AuthenticationError, ScraperError
 
 # ----- Facebook Scrapper -----
 class FacebookScrapper(SocialMediaScrapperBase):
@@ -58,13 +59,13 @@ class FacebookScrapper(SocialMediaScrapperBase):
             self._client_token = client_token
             print("[FacebookScrapper] Authentication successful.")
         else:
-            raise ValueError("Invalid Facebook token")
+            raise AuthenticationError("Invalid or expired Facebook token")
 
     
     def fetch_data(self):
         """Fetch latest 150 posts from Facebook Graph API for the authenticated user."""
         if not self._isAuthenticated or not self._user_id:
-            raise ValueError("Not authenticated. Please authenticate first.")
+            raise ScraperError("Not authenticated. Please authenticate first.")
 
         print("[FacebookScrapper] Fetching posts data from Facebook...")
 
@@ -99,7 +100,7 @@ class FacebookScrapper(SocialMediaScrapperBase):
 
         except requests.RequestException as e:
             print(f"[FacebookScrapper] Request error while fetching posts: {e}")
-            return []
+            raise ScraperError(f"Facebook API request failed: {str(e)}")
         except ValueError as ve:
             print(f"[FacebookScrapper] Data validation error: {ve}")
-            return []
+            raise ScraperError(f"Facebook API request failed: {str(ve)}")

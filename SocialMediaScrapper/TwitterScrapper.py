@@ -1,6 +1,7 @@
 from .SocialMediaScrapperBase import SocialMediaScrapperBase
 import requests
 from typing import List, Dict, Any
+from exceptions.exceptions import AuthenticationError, ScraperError
 
 # ----- Twitter Scrapper -----
 class TwitterScrapper(SocialMediaScrapperBase):
@@ -13,12 +14,12 @@ class TwitterScrapper(SocialMediaScrapperBase):
             print(f"[TwitterScrapper] Authenticated. User ID: {self._user_id}")
         except Exception as e:
             print(f"[TwitterScrapper] Authentication failed: {str(e)}")
-            raise
+            raise AuthenticationError(f"Twitter authentication failed: {str(e)}")
 
     def fetch_data(self):
         """Fetch tweets for authenticated user."""
         if not self._user_id or not self._client_token:
-            raise RuntimeError("User not authenticated. Call _authenticate first.")
+            raise ScraperError("Not authenticated. Please authenticate first.")
 
         url = (
             f"https://api.x.com/2/users/{self._user_id}/tweets"
@@ -41,10 +42,10 @@ class TwitterScrapper(SocialMediaScrapperBase):
 
         except requests.RequestException as e:
             print(f"[TwitterScrapper] Error fetching tweets: {str(e)}")
-            raise
+            raise ScraperError(f"Twitter API request failed: {str(e)}")
         except ValueError as e:
             print(f"[TwitterScrapper] Invalid response structure: {str(e)}")
-            raise
+            raise ScraperError(f"Twitter data parsing failed: {str(e)}")
     
         # ---------- Private Helpers ----------
     def __verify_token(self, client_token: str) -> str:
