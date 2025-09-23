@@ -1,7 +1,6 @@
 from SocialMediaScrapper import FacebookScrapper, TwitterScrapper, InstagramScrapper
 from pydantic import BaseModel, model_validator
 from typing import Optional, List
-from utils import Parser, Normalizer, StorageGateway
 from Orchestrator import Orchestrator
 from Scrapper import Scrapper
 from fastapi import FastAPI
@@ -49,17 +48,8 @@ def run_scrapper(tokens: TokenRequest):
         scrappers.append(FacebookScrapper(tokens.facebook_token))
     if tokens.twitter_token:
         scrappers.append(TwitterScrapper(tokens.twitter_token))
-        
-    parser = Parser()
-    normalizer = Normalizer()
-    storage = StorageGateway()
 
-    orchestrator = Orchestrator.Orchestrator(
-        scrappers=scrappers,
-        parser=parser,
-        normalizer=normalizer,
-        storage_gateway=storage
-    )
+    orchestrator = Orchestrator.Orchestrator(scrappers=scrappers)
 
     try:
         orchestrator.run()

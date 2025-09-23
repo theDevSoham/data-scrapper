@@ -11,9 +11,12 @@ class SocialMediaScrapperBase(Scrapper, Authenticator):
         
     def _authenticate(self, client_token: str) -> None:
         print(f"{self.__class__.__name__}: Authenticating with social media platform using token {client_token}...")
-        self._isAuthenticated = True
+        self._isAuthenticated = False
 
     def fetch_data(self) -> List[Dict[str, Any]]:
         if not self._isAuthenticated:
             self._authenticate()
+        print(f"{self.__class__.__name__}: Parsing social media data...")
+        
+    def parse_data(self, posts: List) -> None:
         print(f"{self.__class__.__name__}: Parsing social media data...")

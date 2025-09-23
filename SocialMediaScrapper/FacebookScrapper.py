@@ -104,3 +104,6 @@ class FacebookScrapper(SocialMediaScrapperBase):
         except ValueError as ve:
             print(f"[FacebookScrapper] Data validation error: {ve}")
             raise ScraperError(f"Facebook API request failed: {str(ve)}")
+        
+    def parse_data(self, posts: List):
+        print("[FacebookScrapper] Parsing data...")

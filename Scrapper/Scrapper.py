@@ -5,3 +5,6 @@ from typing import Dict, Any, List
 class Scrapper(ABC):
     @abstractmethod
     def fetch_data(self) -> List[Dict[str, Any]]: ...
+    
+    @abstractmethod
+    def parse_data(self, posts: List) -> None: ...
