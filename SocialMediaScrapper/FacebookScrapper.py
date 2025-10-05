@@ -136,7 +136,7 @@ class FacebookScrapper(SocialMediaScrapperBase):
         payload = {"platform": "facebook", "payload": {"data": normalized_posts}}
 
         try:
-            response = requests.post(PARSER_URL, json=payload)
+            response = requests.post(PARSER_URL, json=payload, timeout=60)
             response.raise_for_status()  # Raise exception for HTTP errors
             result = response.json()
             print(f"[FacebookScrapper] Result: {result}")
