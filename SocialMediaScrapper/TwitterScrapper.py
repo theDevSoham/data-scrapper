@@ -177,7 +177,8 @@ class TwitterScrapper(SocialMediaScrapperBase):
         payload = {"platform": "twitter", "payload": {"data": normalized_posts, "meta": meta}}
 
         try:
-            resp = requests.post(PARSER_URL, json=payload, timeout=60)
+            url = f"{PARSER_URL}/parse-and-push"
+            resp = requests.post(url, json=payload, timeout=240)
             resp.raise_for_status()
             try:
                 return resp.json()
