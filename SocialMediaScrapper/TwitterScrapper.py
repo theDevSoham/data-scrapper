@@ -2,21 +2,10 @@ from .SocialMediaScrapperBase import SocialMediaScrapperBase
 import requests
 from typing import List, Dict, Any, Optional
 from config.Config import PARSER_URL
-from exceptions.exceptions import AuthenticationError, ScraperError
+from exceptions.exceptions import ScraperError
 
 # ----- Twitter Scrapper -----
 class TwitterScrapper(SocialMediaScrapperBase):
-    
-    def _authenticate(self, client_token: str) -> None:
-        """Authenticate client by verifying provided token."""
-        print("[TwitterScrapper] Authenticating with Twitter...")
-        try:
-            self._user_id = self.__verify_token(client_token)
-            print(f"[TwitterScrapper] Authenticated. User ID: {self._user_id}")
-        except Exception as e:
-            print(f"[TwitterScrapper] Authentication failed: {str(e)}")
-            raise AuthenticationError(f"Twitter authentication failed: {str(e)}")
-
     def fetch_data(self):
         """Fetch tweets for authenticated user."""
         if not self._user_id or not self._client_token:
@@ -30,33 +19,33 @@ class TwitterScrapper(SocialMediaScrapperBase):
         headers = {"Authorization": f"Bearer {self._client_token}"}
 
         try:
-            # response = requests.get(url, headers=headers, timeout=10)
-            # response.raise_for_status()
-            twitter_sample = {
-                "data": [ 
-                    {
-                        "text": "🦅 https://t.co/FnR3dqIWtL", 
-                        "created_at": "2024-10-16T12:58:35.000Z", 
-                        "id": "1846536216969089037", 
-                        "public_metrics": { 
-                            "retweet_count": 0, 
-                            "reply_count": 0, 
-                            "like_count": 0, 
-                            "quote_count": 0, 
-                            "bookmark_count": 0, 
-                            "impression_count": 12 
-                        }, 
-                        "edit_history_tweet_ids": [ "1846536216969089037" ] 
-                    } 
-                ],
-                "meta": { 
-                    "result_count": 1, 
-                    "newest_id": "1846536216969089037", 
-                    "oldest_id": "1846536216969089037" 
-                } 
-            }
-            # payload = response.json()
-            payload = twitter_sample
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            # twitter_sample = {
+            #     "data": [ 
+            #         {
+            #             "text": "🦅 https://t.co/FnR3dqIWtL", 
+            #             "created_at": "2024-10-16T12:58:35.000Z", 
+            #             "id": "1846536216969089037", 
+            #             "public_metrics": { 
+            #                 "retweet_count": 0, 
+            #                 "reply_count": 0, 
+            #                 "like_count": 0, 
+            #                 "quote_count": 0, 
+            #                 "bookmark_count": 0, 
+            #                 "impression_count": 12 
+            #             }, 
+            #             "edit_history_tweet_ids": [ "1846536216969089037" ] 
+            #         } 
+            #     ],
+            #     "meta": { 
+            #         "result_count": 1, 
+            #         "newest_id": "1846536216969089037", 
+            #         "oldest_id": "1846536216969089037" 
+            #     } 
+            # }
+            payload = response.json()
+            # payload = twitter_sample
 
             tweets = self.__validate_tweets(payload)
             print(f"[TwitterScrapper] Retrieved {len(tweets)} tweets ✅")
@@ -202,39 +191,39 @@ class TwitterScrapper(SocialMediaScrapperBase):
             raise RuntimeError(f'{str(exc)}')
 
     
-    # def parse_data(self, posts: List[Dict[str, Any]]) -> Dict[str, Any]:
-    #     """
-    #     Sends a batch of Twitter posts to the parse-and-push endpoint.
-    #     """
-    #     print("[TwitterScrapper] Parsing data...")
+    def parse_data(self, posts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Sends a batch of Twitter posts to the parse-and-push endpoint.
+        """
+        print("[TwitterScrapper] Parsing data...")
 
-    #     normalized_posts = []
-    #     for post in posts:
-    #         normalized_post = {
-    #             "id": post.get("id", ""),
-    #             "created_time": post.get("created_at", ""),
-    #             "text": post.get("text", ""),
-    #             "metrics": {
-    #                 "retweet_count": post.get("metrics", {}).get("retweet_count", 0),
-    #                 "reply_count": post.get("metrics", {}).get("reply_count", 0),
-    #                 "like_count": post.get("metrics", {}).get("like_count", 0),
-    #                 "quote_count": post.get("metrics", {}).get("quote_count", 0),
-    #                 "bookmark_count": post.get("metrics", {}).get("bookmark_count", 0),
-    #                 "impression_count": post.get("metrics", {}).get("impression_count", 0),
-    #             },
-    #             "attachments": {"data": post.get("attachments", []) if post.get("attachments") else []},
-    #         }
-    #         normalized_posts.append(normalized_post)
+        normalized_posts = []
+        for post in posts:
+            normalized_post = {
+                "id": post.get("id", ""),
+                "created_time": post.get("created_at", ""),
+                "text": post.get("text", ""),
+                "metrics": {
+                    "retweet_count": post.get("metrics", {}).get("retweet_count", 0),
+                    "reply_count": post.get("metrics", {}).get("reply_count", 0),
+                    "like_count": post.get("metrics", {}).get("like_count", 0),
+                    "quote_count": post.get("metrics", {}).get("quote_count", 0),
+                    "bookmark_count": post.get("metrics", {}).get("bookmark_count", 0),
+                    "impression_count": post.get("metrics", {}).get("impression_count", 0),
+                },
+                "attachments": {"data": post.get("attachments", []) if post.get("attachments") else []},
+            }
+            normalized_posts.append(normalized_post)
 
-    #     payload = {"platform": "twitter", "payload": {"data": normalized_posts}}
+        payload = {"platform": "twitter", "payload": {"data": normalized_posts}}
 
-    #     try:
-    #         response = requests.post(PARSER_URL, json=payload, timeout=60)
-    #         response.raise_for_status()  # Raise exception for HTTP errors
-    #         result = response.json()
-    #         print(f"[TwitterScrapper] Result: {result}")
-    #         return result
+        try:
+            response = requests.post(PARSER_URL, json=payload, timeout=60)
+            response.raise_for_status()  # Raise exception for HTTP errors
+            result = response.json()
+            print(f"[TwitterScrapper] Result: {result}")
+            return result
 
-    #     except requests.RequestException as e:
-    #         print(f"[TwitterScrapper] Error sending data: {e}")
-    #         raise RuntimeError(f"Error sending data: {e}")
+        except requests.RequestException as e:
+            print(f"[TwitterScrapper] Error sending data: {e}")
+            raise RuntimeError(f"Error sending data: {e}")

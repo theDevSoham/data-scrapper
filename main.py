@@ -1,4 +1,3 @@
-from SocialMediaScrapper import FacebookScrapper, TwitterScrapper, InstagramScrapper
 from pydantic import BaseModel, model_validator
 from typing import Optional, List
 from Orchestrator import Orchestrator
@@ -27,29 +26,18 @@ async def scraper_exception_handler(request: Request, exc: ScraperError):
 
 # Request body schema
 class TokenRequest(BaseModel):
-    instagram_token: Optional[str] = None
-    facebook_token: Optional[str] = None
-    twitter_token: Optional[str] = None
+    app_token: str
 
     @model_validator(mode="after")
     def at_least_one_token(self):
-        if not any([self.instagram_token, self.facebook_token, self.twitter_token]):
+        if not any([self.app_token]):
             raise ValueError("At least one token must be provided")
         return self
 
 
 @app.post("/scrape")
 def run_scrapper(tokens: TokenRequest):
-    scrappers: List[Scrapper] = []
-    
-    if tokens.instagram_token:
-        scrappers.append(InstagramScrapper(tokens.instagram_token))
-    if tokens.facebook_token:
-        scrappers.append(FacebookScrapper(tokens.facebook_token))
-    if tokens.twitter_token:
-        scrappers.append(TwitterScrapper(tokens.twitter_token))
-
-    orchestrator = Orchestrator.Orchestrator(scrappers=scrappers)
+    orchestrator = Orchestrator.Orchestrator(token=tokens.app_token)
 
     try:
         orchestrator.run()
