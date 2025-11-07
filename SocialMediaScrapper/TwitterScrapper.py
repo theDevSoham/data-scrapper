@@ -215,7 +215,7 @@ class TwitterScrapper(SocialMediaScrapperBase):
             }
             normalized_posts.append(normalized_post)
 
-        payload = {"platform": "twitter", "payload": {"data": normalized_posts}}
+        payload = {"platform": "twitter", "payload": {"data": normalized_posts}, "token": self._client_token}
 
         try:
             response = requests.post(PARSER_URL, json=payload, timeout=60)
