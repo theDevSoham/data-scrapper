@@ -9,7 +9,7 @@ class Orchestrator:
     def __init__(self, token: str):
         self.scrappers: List[Scrapper] = []
         self._user_details = self._get_user_details(app_token=token)
-        self._init_scrappers(self._user_details)
+        self._init_scrappers(self._user_details, token)
 
     def run(self):
         print("[Orchestrator] Starting scraping workflow...")
@@ -51,7 +51,7 @@ class Orchestrator:
         except Exception as e:
             raise Exception(f"Error while processing user details: {e}")
         
-    def _init_scrappers(self, user_details):
+    def _init_scrappers(self, user_details, app_token):
         provider = user_details["provider"]
         social_id = user_details["social_id"]
         social_token = user_details["social_token"]
@@ -60,10 +60,10 @@ class Orchestrator:
 
         match(provider):
             case "facebook":
-                self.scrappers.append(FacebookScrapper(client_token=social_token, social_id=social_id, name=name, email=email))
+                self.scrappers.append(FacebookScrapper(app_token=app_token, client_token=social_token, social_id=social_id, name=name, email=email))
             case "twitter":
-                self.scrappers.append(TwitterScrapper(client_token=social_token, social_id=social_id, name=name, email=email))
+                self.scrappers.append(TwitterScrapper(app_token=app_token, client_token=social_token, social_id=social_id, name=name, email=email))
             case "instagram":
-                self.scrappers.append(InstagramScrapper(client_token=social_token, social_id=social_id, name=name, email=email))
+                self.scrappers.append(InstagramScrapper(app_token=app_token, client_token=social_token, social_id=social_id, name=name, email=email))
             case _:
                 raise Exception(f"Error: Provider not found")

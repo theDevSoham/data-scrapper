@@ -77,10 +77,11 @@ class FacebookScrapper(SocialMediaScrapperBase):
             }
             normalized_posts.append(normalized_post)
 
-        payload = {"platform": "facebook", "payload": {"data": normalized_posts}, "token": self._client_token}
+        payload = {"platform": "facebook", "payload": {"data": normalized_posts}, "token": self._app_token}
 
         try:
-            response = requests.post(PARSER_URL, json=payload, timeout=240)
+            url = f"{PARSER_URL}/parse-and-push"
+            response = requests.post(url, json=payload, timeout=240)
             response.raise_for_status()  # Raise exception for HTTP errors
             result = response.json()
             print(f"[FacebookScrapper] Result: {result}")
