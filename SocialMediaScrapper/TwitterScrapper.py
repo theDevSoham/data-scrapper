@@ -174,7 +174,7 @@ class TwitterScrapper(SocialMediaScrapperBase):
             if "oldest_id" not in meta and normalized_posts:
                 meta["oldest_id"] = normalized_posts[-1]["id"]
 
-        payload = {"platform": "twitter", "payload": {"data": normalized_posts, "meta": meta}}
+        payload = {"platform": "twitter", "payload": {"data": normalized_posts, "meta": meta}, "token": self._app_token}
 
         try:
             url = f"{PARSER_URL}/parse-and-push"
@@ -190,41 +190,40 @@ class TwitterScrapper(SocialMediaScrapperBase):
                 }
         except requests.RequestException as exc:
             raise RuntimeError(f'{str(exc)}')
-
     
-    def parse_data(self, posts: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Sends a batch of Twitter posts to the parse-and-push endpoint.
-        """
-        print("[TwitterScrapper] Parsing data...")
+    # def parse_data(self, posts: List[Dict[str, Any]]) -> Dict[str, Any]:
+    #     """
+    #     Sends a batch of Twitter posts to the parse-and-push endpoint.
+    #     """
+    #     print("[TwitterScrapper] Parsing data...")
 
-        normalized_posts = []
-        for post in posts:
-            normalized_post = {
-                "id": post.get("id", ""),
-                "created_time": post.get("created_at", ""),
-                "text": post.get("text", ""),
-                "metrics": {
-                    "retweet_count": post.get("metrics", {}).get("retweet_count", 0),
-                    "reply_count": post.get("metrics", {}).get("reply_count", 0),
-                    "like_count": post.get("metrics", {}).get("like_count", 0),
-                    "quote_count": post.get("metrics", {}).get("quote_count", 0),
-                    "bookmark_count": post.get("metrics", {}).get("bookmark_count", 0),
-                    "impression_count": post.get("metrics", {}).get("impression_count", 0),
-                },
-                "attachments": {"data": post.get("attachments", []) if post.get("attachments") else []},
-            }
-            normalized_posts.append(normalized_post)
+    #     normalized_posts = []
+    #     for post in posts:
+    #         normalized_post = {
+    #             "id": post.get("id", ""),
+    #             "created_time": post.get("created_at", ""),
+    #             "text": post.get("text", ""),
+    #             "metrics": {
+    #                 "retweet_count": post.get("metrics", {}).get("retweet_count", 0),
+    #                 "reply_count": post.get("metrics", {}).get("reply_count", 0),
+    #                 "like_count": post.get("metrics", {}).get("like_count", 0),
+    #                 "quote_count": post.get("metrics", {}).get("quote_count", 0),
+    #                 "bookmark_count": post.get("metrics", {}).get("bookmark_count", 0),
+    #                 "impression_count": post.get("metrics", {}).get("impression_count", 0),
+    #             },
+    #             "attachments": {"data": post.get("attachments", []) if post.get("attachments") else []},
+    #         }
+    #         normalized_posts.append(normalized_post)
 
-        payload = {"platform": "twitter", "payload": {"data": normalized_posts}, "token": self._app_token}
+    #     payload = {"platform": "twitter", "payload": {"data": normalized_posts}, "token": self._app_token}
 
-        try:
-            response = requests.post(PARSER_URL, json=payload, timeout=60)
-            response.raise_for_status()  # Raise exception for HTTP errors
-            result = response.json()
-            print(f"[TwitterScrapper] Result: {result}")
-            return result
+    #     try:
+    #         response = requests.post(PARSER_URL, json=payload, timeout=60)
+    #         response.raise_for_status()  # Raise exception for HTTP errors
+    #         result = response.json()
+    #         print(f"[TwitterScrapper] Result: {result}")
+    #         return result
 
-        except requests.RequestException as e:
-            print(f"[TwitterScrapper] Error sending data: {e}")
-            raise RuntimeError(f"Error sending data: {e}")
+    #     except requests.RequestException as e:
+    #         print(f"[TwitterScrapper] Error sending data: {e}")
+    #         raise RuntimeError(f"Error sending data: {e}")
