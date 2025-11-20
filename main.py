@@ -34,6 +34,9 @@ class TokenRequest(BaseModel):
             raise ValueError("At least one token must be provided")
         return self
 
+@app.get("/health")
+def health_check():
+    return {"status": "success", "message": "service running"}
 
 @app.post("/scrape")
 def run_scrapper(tokens: TokenRequest):
